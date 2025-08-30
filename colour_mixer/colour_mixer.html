@@ -1,0 +1,39 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Colour mixer</title>
+    <style>
+        #colorDisplay{
+            width: 400px;
+            height: 200px;
+        }
+    </style>
+</head>
+<body>
+    <form oninput="redValue.value=red.value; greenValue.value=green.value; blueValue.value=blue.value">
+    RED: <output name="redValue" for="red">255</output>, GREEN: <output name="greenValue" for="green"></output>, BLUE: <output name="blueValue" for="blue">255</output>
+
+    <div id="colorDisplay"></div>
+    <input type="range" name="red" id="red" value="255" max="255" list="colorBits"><input type="range" name="green" id="green" value="55" max="255" list="colorBits"><input type="range" name="blue" id="blue" value="255" max="255" list="colorBits">
+    </form>
+    <datalist id="colorBits">
+        <option value="0" label="0">0</option>
+        <option value="63" label="63">63</option>
+        <option value="127" label="127">127</option>
+        <option value="191" label="191">191</option>
+        <option value="255" label="255">255</option>
+    </datalist>
+    
+    <script>
+        const RANGE_DRAGGER = document.querySelectorAll("input[type=range]");
+        const MAIN_DISPLAY = document.querySelector("#colorDisplay");
+        MAIN_DISPLAY.style.backgroundColor = "rgb(" + (RANGE_DRAGGER[0].value) + ", " + (RANGE_DRAGGER[1].value) + ", " + (RANGE_DRAGGER[2].value) + ")";
+
+        RANGE_DRAGGER.forEach(elem => elem.addEventListener("input", () => 
+            MAIN_DISPLAY.style.backgroundColor = "rgb(" + (RANGE_DRAGGER[0].value) + ", " + (RANGE_DRAGGER[1].value) + ", " + (RANGE_DRAGGER[2].value) + ")"
+        ));
+    </script>
+</body>
+</html>
