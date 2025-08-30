@@ -1,0 +1,215 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Document</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Kanit:ital,wght@0,100;0,200;0,300;0,400;0,500;0,600;0,700;0,800;0,900;1,100;1,200;1,300;1,400;1,500;1,600;1,700;1,800;1,900&display=swap"
+      rel="stylesheet"
+    />
+    <link
+      rel="stylesheet"
+      href="https://fonts.googleapis.com/css2?family=Material+Symbols+Outlined:opsz,wght,FILL,GRAD@20..48,100..700,0..1,-50..200"
+    />
+    <style>
+      body {
+        /* background-color: bisque; */
+      }
+      #mainDisplay {
+        width: 300px;
+        height: fit-content;
+        margin: 100px auto;
+        /* position: relative; */
+        text-align: center;
+      }
+      .sample-div {
+        width: 270px;
+        height: 40px;
+        margin: 8px auto 6px;
+        position: relative;
+        /* left: 15px; */
+        text-align: center;
+        border-radius: 5px;
+        box-shadow: 2px 2px 2px grey;
+        transition: width 0.5s, height 0.5s, margin 0.5s, border-radius 0.5s,
+          box-shadow 0.5s, background-color 0.5s;
+      }
+      .sample-div:first-of-type {
+        margin-top: 0;
+      }
+      .sample-div:hover {
+        cursor: pointer;
+        width: 274px;
+        height: 44px;
+        margin: 6px auto 6px;
+        border-radius: 6px;
+        box-shadow: 3px 3px 3px rgb(191, 191, 191);
+      }
+      .sample-div:first-of-type:hover {
+        margin-top: -2px;
+      }
+      .sample-div:hover + .sample-div {
+        margin-top: 6px;
+      }
+      .conv-to-int-btn {
+        width: 20px;
+        height: 20px;
+        border-radius: 10px;
+        color: white;
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        transition: rotate .2s;
+      }
+      .conv-to-int-btn:hover {
+        width: 22px;
+        height: 22px;
+        border-radius: 11px;
+        color: rgb(218, 241, 194);
+        box-shadow: 5px #ffffff;
+      }
+      .conv-to-int-btn:active {
+        rotate: -180deg;
+      }
+      .material-symbols-outlined {
+        font-variation-settings: "FILL" 0, "wght" 400, "GRAD" 0, "opsz" 20;
+        font-size: 20px;
+      }
+      .material-symbols-outlined:hover {
+        font-size: 22px;
+      }
+      .sample-text {
+        color: #ffffff;
+        font-family: "Kanit", sans-serif;
+        font-weight: 700;
+        font-style: normal;
+        font-size: 20px;
+        line-height: 40px;
+        margin: 0;
+        transition: font-size 0.5s, letter-spacing 0.5s;
+      }
+      .sample-text:hover {
+        font-size: 22px;
+        letter-spacing: 3px;
+      }
+      .sample-text::after {
+        content: attr(data-color);
+      }
+    </style>
+  </head>
+  <body>
+    <div id="mainDisplay"></div>
+    <script>
+      const MAIN_DISPLAY = document.querySelector("#mainDisplay");
+
+      for (let i = 0; i < 7; i++) {
+        const COLOR_ELEMS_HOVERED = createColorHovered();
+        const COLOR_ELEMS = createColor(COLOR_ELEMS_HOVERED);
+        const COLOR_ELEMS_ACTIVE = createColorActive(COLOR_ELEMS_HOVERED);
+        const COLOR_HOVERED = convertToHex(COLOR_ELEMS_HOVERED);
+        const COLOR = convertToHex(COLOR_ELEMS);
+        const COLOR_ACTIVE = convertToHex(COLOR_ELEMS_ACTIVE);
+        const PANEL = createPanel(COLOR, COLOR_HOVERED, COLOR_ACTIVE);
+        const PARAG = createParagraph(COLOR, COLOR_HOVERED, COLOR_ACTIVE);
+        const CONV_BTN = createIntConverter();
+
+        PARAG.appendChild(CONV_BTN);
+        PANEL.appendChild(PARAG);
+
+        MAIN_DISPLAY.appendChild(PANEL);
+      }
+
+      function createPanel(color, colorHovered, colorActive) {
+        const NEW_PANEL = document.createElement("div");
+        NEW_PANEL.classList.add("sample-div");
+        NEW_PANEL.style.backgroundColor = color;
+        NEW_PANEL.addEventListener("mouseenter", function () {
+          this.style.backgroundColor = colorHovered;
+        });
+        NEW_PANEL.addEventListener("mouseleave", function () {
+          this.style.backgroundColor = color;
+        });
+        NEW_PANEL.addEventListener("mousedown", function () {
+          this.style.backgroundColor = colorActive;
+        });
+        NEW_PANEL.addEventListener("mouseup", function () {
+          this.style.backgroundColor = colorHovered;
+        });
+        // NEW_PANEL.style.top = posTop + "px";
+        return NEW_PANEL;
+      }
+
+      function createParagraph(color, colorHovered, colorActive) {
+        const NEW_PARAG = document.createElement("p");
+        NEW_PARAG.classList.add("sample-text");
+        NEW_PARAG.setAttribute("data-color", color);
+        NEW_PARAG.addEventListener("mouseenter", function () {
+          this.setAttribute("data-color", colorHovered);
+        });
+        NEW_PARAG.addEventListener("mouseleave", function () {
+          this.setAttribute("data-color", color);
+        });
+        NEW_PARAG.addEventListener("mousedown", function () {
+          this.setAttribute("data-color", colorActive);
+        });
+        NEW_PARAG.addEventListener("mouseup", function () {
+          this.setAttribute("data-color", colorHovered);
+        });
+        return NEW_PARAG;
+      }
+
+      function createNumer() {
+        return Math.floor(Math.random() * 100000) + 10000;
+      }
+
+      function createColorHovered() {
+        let red = Math.floor(Math.random() * 206) + 10;
+        let green = Math.floor(Math.random() * 206) + 10;
+        let blue = Math.floor(Math.random() * 206) + 10;
+        return [red, green, blue];
+      }
+
+      function createColor(colors) {
+        let red = colors[0] + 40;
+        let green = colors[1] + 40;
+        let blue = colors[2] + 40;
+        return [red, green, blue];
+      }
+
+      function createColorActive(colors) {
+        let red = colors[2];
+        let green = colors[0];
+        let blue = colors[1];
+        return [red, green, blue];
+      }
+
+      function convertToHex(colors) {
+        let red = colors[0].toString(16);
+        let green = colors[1].toString(16);
+        let blue = colors[2].toString(16);
+        red = red.length == 2 ? red : "0" + red;
+        green = green.length == 2 ? green : "0" + green;
+        blue = blue.length == 2 ? blue : "0" + blue;
+        console.log("#" + red + green + blue);
+        return "#" + red + green + blue;
+      }
+
+      function createIntConverter() {
+        const convBtn = document.createElement("span");
+        convBtn.classList.add("conv-to-int-btn");
+        convBtn.classList.add("material-symbols-outlined");
+        convBtn.textContent = "change_circle";
+        // convBtn.appendChild(changeCircle);
+        convBtn.addEventListener(
+          "click",
+          () => console.log("here I am"),
+          false
+        );
+        return convBtn;
+      }
+    </script>
+  </body>
+</html>
