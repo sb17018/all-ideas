@@ -14,31 +14,9 @@
             --height: 300px;
         }
         #numberDisplayPanel{
-            width: calc(var(--width) * var(--scaler));
-            height: calc(var(--height) * var(--scaler));
             position: absolute;
         }
         .number-display-frame{
-            height: calc(var(--height) * var(--scaler));
-            position: absolute;
-            overflow: hidden;
-        }
-        .number-display-frame.left{
-            width: 0;
-            background-color: rgb(236, 158, 190);
-            z-index: 9999;
-        }
-        .number-display-frame.movable{
-            width: calc(1px * var(--scaler));
-            background-color: rgb(236, 158, 190);
-            z-index: 99999999;
-        }
-        .number-display-frame.right{
-            width: 100%;
-            right: 0;
-            background-color: rgb(214, 26, 105);
-        }
-        .number-display{
             width: calc(var(--width) * var(--scaler));
             height: calc(var(--height) * var(--scaler));
             position: absolute;
@@ -49,20 +27,27 @@
             font-size: calc(var(--height) * 1.1 * var(--scaler));
             font-style: normal;
             line-height: calc(var(--height) * var(--scaler));
+            overflow: hidden;
         }
-        .number-display.left{
-            left: 0;
+        .number-display-frame{
+            background-color: rgb(236, 158, 190);
+            z-index: 9999;
+        }
+        .number-display-frame.movable{
+            width: calc(1px * var(--scaler));
+        }
+        .number-display-frame.right{
+            color: rgb(3, 3, 66);
+            background-color: rgb(214, 26, 105);
+            text-shadow: 4px 4px rgb(1, 1, 20);
+            z-index: -999;
+        }
+        .number-display{
+            width: calc(var(--width) * var(--scaler));
+            height: calc(var(--height) * var(--scaler));
+            position: absolute;
             color: gray;
             filter: blur(calc(6px * var(--scaler)));
-        }
-        .number-display.movable{
-            filter: blur(calc(6px * var(--scaler)));
-            z-index: 999999999;
-        }
-        .number-display.right{
-            right: 0;
-            color: rgb(3, 3, 66);
-            text-shadow: 4px 4px rgb(1, 1, 20);;
         }
     </style>
 </head>
@@ -74,9 +59,7 @@
     <div class="number-display-frame movable">
         <div class="number-display movable">3</div>
     </div>
-    <div class="number-display-frame right">
-        <div class="number-display right">3</div>
-    </div>
+        <div class="number-display-frame right">3</div>
     </div>
     <script>
         const LEFT_DISPLAY_FRAME = document.querySelector(".number-display-frame.left");
@@ -84,7 +67,6 @@
         const MOVING_DISPLAY_FRAME = document.querySelector(".number-display-frame.movable");
 
         const LEFT_DISPLAY = document.querySelector(".number-display.left");
-        const RIGHT_DISPLAY = document.querySelector(".number-display.right");
         const MOVING_DISPLAY = document.querySelector(".number-display.movable");
 
         const SCALER = parseInt(getComputedStyle(document.querySelector(':root')).getPropertyValue('--scaler'));
@@ -115,13 +97,12 @@
                         movingPanelHeight += SCALER;
                         MOVING_DISPLAY_FRAME.style.height = movingPanelHeight + "px";
                         MOVING_DISPLAY_FRAME.style.visibility = "visible";
-                        // MOVING_DISPLAY.style.visibility = "visible";
                         if(movingPanelHeight == ORIGINAL_PANEL_HEIGHT) {
                             movingPanelHeight = 0;
                             leftPanelWidth += SCALER;
                             if(leftPanelWidth == ORIGINAL_PANEL_WIDTH){
                                 LEFT_DISPLAY.textContent = LEFT_DISPLAY.textContent - 1;
-                                RIGHT_DISPLAY.textContent = RIGHT_DISPLAY.textContent - 1;
+                                RIGHT_DISPLAY_FRAME.textContent = RIGHT_DISPLAY_FRAME.textContent - 1;
                                 MOVING_DISPLAY.textContent = MOVING_DISPLAY.textContent - 1;
                                 leftPanelWidth = 0;
                                 if(LEFT_DISPLAY.textContent == 0){
@@ -135,13 +116,12 @@
                             }                        
                             if(!stop){
                                 MOVING_DISPLAY_FRAME.style.visibility = "hidden";
-                                // MOVING_DISPLAY.style.visibility = "hidden";
                                 MOVING_DISPLAY.style.left = -leftPanelWidth + "px";
                                 MOVING_DISPLAY_FRAME.style.left = leftPanelWidth + "px";
                                 LEFT_DISPLAY_FRAME.style.width = leftPanelWidth + "px";
                             }
                         }            
-        }, 1000);
+        }, 100);
 
         function getCurrentSecondOfDay(){
             let now = new Date();
