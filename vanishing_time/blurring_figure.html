@@ -1,0 +1,161 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Time's clicking out...</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Karla:ital,wght@0,200..800;1,200..800&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --scaler: 2;
+            --width: 288px;
+            --height: 300px;
+        }
+        #numberDisplayPanel{
+            width: calc(var(--width) * var(--scaler));
+            height: calc(var(--height) * var(--scaler));
+            position: absolute;
+        }
+        .number-display-frame{
+            height: calc(var(--height) * var(--scaler));
+            position: absolute;
+            overflow: hidden;
+        }
+        .number-display-frame.left{
+            width: 0;
+            background-color: rgb(236, 158, 190);
+            z-index: 9999;
+        }
+        .number-display-frame.movable{
+            width: calc(1px * var(--scaler));
+            background-color: rgb(236, 158, 190);
+            z-index: 99999999;
+        }
+        .number-display-frame.right{
+            width: 100%;
+            right: 0;
+            background-color: rgb(214, 26, 105);
+        }
+        .number-display{
+            width: calc(var(--width) * var(--scaler));
+            height: calc(var(--height) * var(--scaler));
+            position: absolute;
+            text-align: center;
+            font-family: "Karla", sans-serif;
+            font-optical-sizing: auto;
+            font-weight: 800;
+            font-size: calc(var(--height) * 1.1 * var(--scaler));
+            font-style: normal;
+            line-height: calc(var(--height) * var(--scaler));
+        }
+        .number-display.left{
+            left: 0;
+            color: gray;
+            filter: blur(calc(6px * var(--scaler)));
+        }
+        .number-display.movable{
+            filter: blur(calc(6px * var(--scaler)));
+            z-index: 999999999;
+        }
+        .number-display.right{
+            right: 0;
+            color: rgb(3, 3, 66);
+            text-shadow: 4px 4px rgb(1, 1, 20);;
+        }
+        .pixel{
+            position: absolute;
+            border: 1px solid grey;
+        }
+        .pixel.vanished{
+            border: none;
+        }
+    </style>
+</head>
+<body>
+    <div id="numberDisplayPanel">
+    <div class="number-display-frame left">
+        <div class="number-display left">3</div>
+    </div>
+    <div class="number-display-frame movable">
+        <div class="number-display movable">3</div>
+    </div>
+    <div class="number-display-frame right">
+        <div class="number-display right">3</div>
+    </div>
+    </div>
+    <script>
+        const LEFT_DISPLAY_FRAME = document.querySelector(".number-display-frame.left");
+        const RIGHT_DISPLAY_FRAME = document.querySelector(".number-display-frame.right");
+        const MOVING_DISPLAY_FRAME = document.querySelector(".number-display-frame.movable");
+
+        const LEFT_DISPLAY = document.querySelector(".number-display.left");
+        const RIGHT_DISPLAY = document.querySelector(".number-display.right");
+        const MOVING_DISPLAY = document.querySelector(".number-display.movable");
+
+        const SCALER = parseInt(getComputedStyle(document.querySelector(':root')).getPropertyValue('--scaler'));
+
+        const SECONDS_PER_COLUMN = parseInt(getComputedStyle(document.querySelector(':root')).getPropertyValue('--height'));
+
+        const CURRENT_SECOND_OF_DAY = getCurrentSecondOfDay();
+
+        const NUMBER_OF_COLUMN_PASSED = Math.floor(CURRENT_SECOND_OF_DAY / SECONDS_PER_COLUMN);
+
+        const LEFT_SECONDS = CURRENT_SECOND_OF_DAY - NUMBER_OF_COLUMN_PASSED * SECONDS_PER_COLUMN;
+
+        const ORIGINAL_PANEL_HEIGHT = parseInt(getComputedStyle(RIGHT_DISPLAY_FRAME).getPropertyValue("height"));
+        
+        const ORIGINAL_PANEL_WIDTH = parseInt(getComputedStyle(RIGHT_DISPLAY_FRAME).getPropertyValue("width"));
+
+        let leftPanelWidth = NUMBER_OF_COLUMN_PASSED * SCALER;
+
+        LEFT_DISPLAY_FRAME.style.width = leftPanelWidth + "px";
+        MOVING_DISPLAY_FRAME.style.left = leftPanelWidth + "px";
+        MOVING_DISPLAY.style.left = -leftPanelWidth + "px";
+
+        let movingPanelHeight = LEFT_SECONDS * SCALER;
+        MOVING_DISPLAY_FRAME.style.height = movingPanelHeight + "px";
+
+        const timer = setInterval(()=> {
+                        let stop = false;
+                        movingPanelHeight += SCALER;
+                        MOVING_DISPLAY_FRAME.style.height = movingPanelHeight + "px";
+                        MOVING_DISPLAY_FRAME.style.visibility = "visible";
+                        // MOVING_DISPLAY.style.visibility = "visible";
+                        if(movingPanelHeight == ORIGINAL_PANEL_HEIGHT) {
+                            movingPanelHeight = 0;
+                            leftPanelWidth += SCALER;
+                            if(leftPanelWidth == ORIGINAL_PANEL_WIDTH){
+                                LEFT_DISPLAY.textContent = LEFT_DISPLAY.textContent - 1;
+                                RIGHT_DISPLAY.textContent = RIGHT_DISPLAY.textContent - 1;
+                                MOVING_DISPLAY.textContent = MOVING_DISPLAY.textContent - 1;
+                                leftPanelWidth = 0;
+                                if(LEFT_DISPLAY.textContent == 0){
+                                    LEFT_DISPLAY_FRAME.remove();
+                                    LEFT_DISPLAY.remove();
+                                    MOVING_DISPLAY_FRAME.remove();
+                                    MOVING_DISPLAY.remove();
+                                    clearInterval(timer);
+                                    stop = true
+                                }  
+                            }                        
+                            if(!stop){
+                                MOVING_DISPLAY_FRAME.style.visibility = "hidden";
+                                // MOVING_DISPLAY.style.visibility = "hidden";
+                                MOVING_DISPLAY.style.left = -leftPanelWidth + "px";
+                                MOVING_DISPLAY_FRAME.style.left = leftPanelWidth + "px";
+                                LEFT_DISPLAY_FRAME.style.width = leftPanelWidth + "px";
+                            }
+                        }            
+        }, 1000);
+
+        function getCurrentSecondOfDay(){
+            let now = new Date();
+            const START_DAY = new Date(now.toISOString().split("T")[0]);
+            let currentSecondOfDay = parseInt((now - START_DAY) / 1000);
+            return currentSecondOfDay;
+        }
+    </script>
+</body>
+</html>
