@@ -1,0 +1,258 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Set Columns</title>
+    <style>
+      #tableSettingPanel {
+        width: fit-content;
+      }
+      #tableSettingDisplay {
+        height: 0;
+        overflow: hidden;
+        transition: height 0.5s;
+      }
+      #tableSettingDisplay.opened {
+        height: 150px;
+        /* transition: height .5s; */
+      }
+      ul {
+        width: 150px;
+        position: relative;
+        list-style-type: none; /* Remove bullets */
+      }
+      ul p,
+      ul input {
+        display: inline;
+      }
+      ul input {
+        right: 0;
+        position: absolute;
+      }
+      button {
+        width: 100%;
+      }
+      button::after {
+        content: "open table settings";
+      }
+      button.opened::after {
+        content: "close table settings";
+      }
+      table {
+        border: 1px solid black;
+        border-spacing: 0;
+        overflow: hidden;
+      }
+      th.wide-column {
+        background-color: rgb(144, 9, 41);
+      }
+      th.wide-column,
+      td.wide-column {
+        max-width: 100px;
+        height: 16px;
+        padding: 5px;
+        position: relative;
+        border: 1px solid black;
+        transition: max-width 0.2s;
+      }
+      td.wide-column:hover,
+      th.wide-column:hover {
+        background-color: aquamarine;
+        background-blend-mode: multiply;
+      }
+
+      /* td.wide-column:hover::before,
+      th.wide-column:hover::before {
+        background-color: #ffa;
+        content: "\00a0";
+        height: 100%;
+        left: -5000px;
+        position: absolute;
+        top: 0;
+        width: 10000px;
+        z-index: -1;
+      }
+      td.wide-column:hover::after,
+      th.wide-column:hover::after {
+        background-color: #ffa;
+        content: "\00a0";
+        height: 10000px;
+        left: 0;
+        position: absolute;
+        top: -5000px;
+        width: 100%;
+        z-index: -1;
+      } */
+      th.narrow-column,
+      td.narrow-column {
+        max-width: 0;
+        padding: 0;
+        border: 0;
+        transition: max-width 0.2s;
+      }
+      p.wide-column {
+        font-size: 16px;
+        transition: font-size 0.2s;
+      }
+      p.narrow-column {
+        font-size: 0;
+        transition: font-size 0.2s;
+      }
+    </style>
+  </head>
+  <body>
+    <div id="tableSettingPanel">
+      <div id="tableSettingDisplay">
+        <ul></ul>
+      </div>
+      <button></button>
+      <!-- <input type="button" value="open table settings" id="setPanelBtn" /> -->
+    </div>
+    <br />
+    <table>
+      <thead></thead>
+      <tbody></tbody>
+    </table>
+    <script>
+      const PERSONAL_DATA_SETTING_LIST = document.querySelector("ul");
+
+      const SETTINGS_PANEL_BTN = document.querySelector("button");
+
+      SETTINGS_PANEL_BTN.addEventListener("click", function () {
+        toggleValue(this);
+      });
+
+      function toggleValue(elem) {
+        elem.classList.toggle("opened");
+        elem.previousElementSibling.classList.toggle("opened");
+      }
+
+      const PERSONAL_DATA = [
+        "First name",
+        "Last name",
+        "City",
+        "Street",
+        "Number",
+        "Date of birth",
+        "Place of birth",
+      ];
+
+      function createPersonalDataSettingList() {
+        PERSONAL_DATA.forEach((personalDataPiece) => {
+          let listElement = document.createElement("li");
+          let listElementParagraph = document.createElement("p");
+          listElementParagraph.textContent = personalDataPiece;
+          let listElementCheckbox = document.createElement("input");
+          listElementCheckbox.setAttribute("type", "checkbox");
+          let camelCaseName = personalDataPiece
+            .split(" ")
+            .map((word) => word[0].toUpperCase() + word.substring(1));
+          camelCaseName = camelCaseName.join("");
+          camelCaseName =
+            camelCaseName[0].toLowerCase() + camelCaseName.substring(1);
+          listElementCheckbox.setAttribute(
+            "name",
+            "personalData--" + camelCaseName
+          );
+          listElementCheckbox.setAttribute(
+            "id",
+            "personalData--" + camelCaseName
+          );
+          listElementCheckbox.setAttribute("checked", true);
+          listElement.appendChild(listElementParagraph);
+          listElement.appendChild(listElementCheckbox);
+          PERSONAL_DATA_SETTING_LIST.appendChild(listElement);
+        });
+      }
+
+      const TABLE_HEAD = document.querySelector("table thead");
+      const TABLE_BODY = document.querySelector("table thead");
+
+      const ROW_NUMBER = 6;
+
+      function createTableContent() {
+        for (let i = 0; i <= ROW_NUMBER; i++) {
+          let tableRow = document.createElement("tr");
+          if (i === 0) {
+            TABLE_HEAD.appendChild(tableRow);
+          } else {
+            TABLE_BODY.appendChild(tableRow);
+          }
+
+          let rowCell;
+          PERSONAL_DATA.forEach((personalDataPiece) => {
+            if (i === 0) {
+              rowCell = document.createElement("th");
+              let cellParagraph = document.createElement("p");
+              cellParagraph.textContent = personalDataPiece;
+              rowCell.appendChild(cellParagraph);
+            } else {
+              rowCell = document.createElement("td");
+            }
+            tableRow.appendChild(rowCell);
+          });
+        }
+      }
+
+      createPersonalDataSettingList();
+      createTableContent();
+
+      const ALL_ROWS = document.querySelectorAll("tr");
+
+      [...ALL_ROWS].map((row) => setColumnNumber(row));
+
+      function setColumnNumber(row) {
+        let cellsInRow = row.children;
+        for (let i = 0; i < cellsInRow.length; i++) {
+          cellsInRow[i].setAttribute("data-column", i);
+          cellsInRow[i].classList.add("wide-column");
+          cellsInRow[i].firstElementChild?.classList.add("wide-column");
+        }
+      }
+
+      const ALL_CHECKBOXES = document.querySelectorAll("input");
+      [...ALL_CHECKBOXES].map((input) =>
+        input.addEventListener("click", function () {
+          toggleColumn([...ALL_CHECKBOXES].indexOf(this));
+          checkIfMinOneChecked();
+        })
+      );
+
+      function checkIfMinOneChecked() {
+        let checkboxesChecked = document.querySelectorAll("input:checked");
+        if (checkboxesChecked.length === 2) {
+          checkboxesChecked[0].disabled = "disabled";
+          checkboxesChecked[1].disabled = "disabled";
+        } else {
+          [...document.querySelectorAll("input:disabled")].map((checkbox) =>
+            checkbox.removeAttribute("disabled")
+          );
+        }
+      }
+
+      function toggleColumn(columnNumber) {
+        let chosenColumn = document.querySelectorAll(
+          "th[data-column='" +
+            columnNumber +
+            "'], td[data-column='" +
+            columnNumber +
+            "']"
+        );
+        // console.log(columnNumber);
+        // console.log(chosenColumn);
+        if (ALL_CHECKBOXES[columnNumber].checked === true) {
+          [...chosenColumn].map((cell) => {
+            cell.setAttribute("class", "wide-column");
+            cell.firstElementChild?.setAttribute("class", "wide-column");
+          });
+        } else {
+          [...chosenColumn].map((cell) => {
+            cell.setAttribute("class", "narrow-column");
+            cell.firstElementChild?.setAttribute("class", "narrow-column");
+          });
+        }
+      }
+    </script>
+  </body>
+</html>
