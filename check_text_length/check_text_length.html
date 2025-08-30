@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Check length of text</title>
+    <style>
+        #measuredText{
+            width: fit-content;            
+        }
+        #output{
+            font-size: 200px;
+            font-weight: 900;
+            line-height: 200px;
+            margin: 0;
+        }
+        #checkBtn{
+            cursor: pointer;
+        }
+    </style>
+</head>
+<body>
+    <div>
+        <p id="measuredText"><span>This is a sample text.</span></p>
+    </div>
+    <br>
+    <input id="checkBtn" type="button" value="CHECK WIDTH">
+    <p id="output"></p>
+    <script>
+
+        let number = 0;
+        const BTN = document.getElementById("checkBtn");
+        const OUT = document.getElementById("output");
+        const TEXT_PLACEHOLDER = document.getElementById("measuredText");
+        const TEXT_LENGTH = Math.round(parseFloat(window.getComputedStyle(TEXT_PLACEHOLDER).width));
+
+        let increment;
+
+        function inrementNumber(){
+            increment = setInterval(() => {
+                if(number != TEXT_LENGTH) OUT.textContent = ++number;
+                else{
+                    clearInterval(increment);
+                    BTN.remove();
+                } 
+            }, 1);
+        }
+
+        BTN.addEventListener("click", inrementNumber);
+
+    </script>    
+</body>
+</html>
