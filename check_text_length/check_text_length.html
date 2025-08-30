@@ -21,7 +21,7 @@
 </head>
 <body>
     <div>
-        <p id="measuredText"><span>This is a sample text.</span></p>
+        <p id="measuredText"><span>Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting, remaining essentially unchanged. It was popularised in the 1960s with the release of Letraset sheets containing Lorem Ipsum passages, and more recently with desktop publishing software like Aldus PageMaker including versions of Lorem Ipsum.</span></p>
     </div>
     <br>
     <input id="checkBtn" type="button" value="CHECK WIDTH">
@@ -34,16 +34,26 @@
         const TEXT_PLACEHOLDER = document.getElementById("measuredText");
         const TEXT_LENGTH = Math.round(parseFloat(window.getComputedStyle(TEXT_PLACEHOLDER).width));
 
+        const OPACITY_GRADIENT = 1 / TEXT_LENGTH;
+
+        let outputOpacity = 0;
+
         let increment;
 
         function inrementNumber(){
             increment = setInterval(() => {
-                if(number != TEXT_LENGTH) OUT.textContent = ++number;
+                if(number != TEXT_LENGTH) {
+                    OUT.textContent = ++number;
+                    // OUT.style.color = "rgb(" + parseInt(Math.random()*256) + ", " + parseInt(Math.random()*256) + ", " + parseInt(Math.random()*256) + ")";
+                    OUT.style.opacity = outputOpacity;
+                    outputOpacity += OPACITY_GRADIENT;
+                }
                 else{
+                    OUT.style.opacity = 1;
                     clearInterval(increment);
                     BTN.remove();
                 } 
-            }, 1);
+            }, 10);
         }
 
         BTN.addEventListener("click", inrementNumber);
